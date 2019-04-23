@@ -1,0 +1,112 @@
+{% extends 'candidate/base.html' %}
+{% block 'body' %}
+{% load widget_tweaks %}
+{% load static %}
+
+<style>
+        textarea{
+ 
+            width: 555px;
+
+            /* font-size: 14px; */
+
+            /* padding: 10px; */
+
+            /* line-height: 17px; */
+
+            border-radius: 3px;
+
+            border: 1px solid #aaaaaa;
+
+        }
+</style>
+
+
+<div class="container">
+
+    <h1>Search Candidate</h1>
+
+    <form>
+        <div class="form-group">
+            <p>Enter Application ID(s) here</p>
+            <textarea class="form-control" rows="15" id="candidate-ids-textarea" ></textarea>
+        </div>
+
+        
+            <button type="button" class="btn btn-primary btn-lg" id="get-spreadsheet-btn">Get Spreadsheet</button>
+            <button type="button" class="btn btn-secondary btn-lg" id="get-form-btn">Get Form</button>
+        
+    </form>
+    <!-- <form action="{% url 'home' %}" method="post">
+        {% csrf_token %}
+        {% for field in searchform %}
+        <div class="form-group {%if field.errors %}alert alert-danger{%endif%}">
+
+
+            {{ field.errors }}
+            {{ field.label_tag }}
+            {% render_field field class="form-control" %}
+
+
+        </div>
+
+    {% endfor %}
+        <input type="submit" value="Search">
+    </form> -->
+
+</div>
+{% endblock %}
+
+
+{% block 'script' %}
+<script>
+$('document').ready(function(){
+ 
+    is_ajax_load = false
+
+    // Initialize the Line Numbers Textarea
+    $('#candidate-ids-textarea').linenumbers({col_width:'75px'});
+
+    // Make the CSRF token as a default setting
+    $.ajaxSetup({
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    });
+
+    var submit_applications_ids = function(ids, get_type){
+        $.post({
+            url: "{% url 'application' %}",
+            dataType: 'json',
+            data: { 'data' : ids, 'get_type': get_type},
+            success: function(data){
+                if(data.url != ''){
+                    window.location.replace(data.url);
+                }
+            }
+            /* TODO  Handle unsuccess AJAX request */
+        });
+    }
+
+    var toggle_ajax_load = function(sw){
+        if(sw == true){
+
+        }else if(sw == false){
+
+        }else{
+
+        }
+    }
+
+    $('#get-spreadsheet-btn').click(
+        function(){
+            submit_applications_ids($('#candidate-ids-textarea').val(), 'SPREADSHEET');
+    });
+
+    $('#get-form-btn').click(
+        function(){
+            submit_applications_ids($('#candidate-ids-textarea').val(), 'FORM');
+    });
+ 
+})</script>
+{% endblock %}
